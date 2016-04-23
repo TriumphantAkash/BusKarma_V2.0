@@ -11,6 +11,11 @@ import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.Spinner;
+import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -61,6 +66,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addConnectionCallbacks(this)
                 .addOnConnectionFailedListener(this)
                 .build();
+
+        // Spinner element
+        Spinner spinner = (Spinner) findViewById(R.id.spinner_bus_route);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
+        {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+            {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                if(selectedItem.equals("Comet Cruiser 883 West"))
+                {
+                    // do your stuff
+                    Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
+                }
+                else if(selectedItem.equals("Comet Cruiser 883 East")){
+                    Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
+                }
+            } // to close the onItemSelected
+            public void onNothingSelected(AdapterView<?> parent)
+            {
+
+            }
+        });
+        // Spinner click listener
+      //  spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
+
+        // Spinner Drop down elements
+        List<String> categories = new ArrayList<String>();
+        categories.add("Comet Cruiser 883 West");
+        categories.add("Comet Cruiser 883 East");
+
+        // Creating adapter for spinner
+        ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
+
+        // Drop down layout style - list view with radio button
+        dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+
+        // attaching data adapter to spinner
+        spinner.setAdapter(dataAdapter);
+
     }
 
     @Override

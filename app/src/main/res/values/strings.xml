@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">BusKarma_v2</string>
     <string name="title_activity_maps">Map</string>
+    <string name="spinner_title">Select Bus Route</string>
 </resources>
