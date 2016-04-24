@@ -40,7 +40,7 @@ import java.util.List;
 
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
-
+//sample comment
     private GoogleMap mMap;
     private LatLng you;
     Marker m;
