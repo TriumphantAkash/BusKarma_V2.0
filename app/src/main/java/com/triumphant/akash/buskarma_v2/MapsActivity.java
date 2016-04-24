@@ -81,20 +81,22 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                     // do your stuff
                     Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
                     String url1 = makeURL(UTD.latitude, UTD.longitude, mcCallum.latitude, mcCallum.longitude);
-                    new connectAsyncTask(url1, "#ffa500").execute();
-                    Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
                     String url2 = makeURL(mcCallum.latitude, mcCallum.longitude,UTD.latitude, UTD.longitude);
-                    new connectAsyncTask(url2, "#ffa500").execute();
+                    ArrayList<String> arrayList = new ArrayList<String>();
+                    arrayList.add(url1);
+                    arrayList.add(url2);
+                    new connectAsyncTask(arrayList, "#ffa500").execute();
 
                 }
                 else if(selectedItem.equals("Comet Cruiser 883 East")){
                     Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
 
                     String url1 = makeURL(UTD.latitude, UTD.longitude, bush.latitude, bush.longitude);
-                    new connectAsyncTask(url1, "#00B200").execute();
-
                     String url2 = makeURL(bush.latitude, bush.longitude,UTD.latitude, UTD.longitude);
-                    new connectAsyncTask(url2, "#00B200").execute();
+                    ArrayList<String> arrayList = new ArrayList<String>();
+                    arrayList.add(url1);
+                    arrayList.add(url2);
+                    new connectAsyncTask(arrayList, "#00B200").execute();
                 }
             } // to close the onItemSelected
             public void onNothingSelected(AdapterView<?> parent)
@@ -238,13 +240,13 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     }
 
 
-    private class connectAsyncTask extends AsyncTask<Void, Void, String> {
+    private class connectAsyncTask extends AsyncTask<Void, Void, ArrayList<String>> {
         private ProgressDialog progressDialog;
-        String url;
+        ArrayList<String> urls;
         String color;
 
-        connectAsyncTask(String urlPass, String clr) {
-            url = urlPass;
+        connectAsyncTask(ArrayList<String> urlPass, String clr) {
+            urls = urlPass;
             color = clr;
         }
 
@@ -258,38 +260,46 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             progressDialog.show();
         }
 
+        //the only method that runs in the background thread, (onPreExecute() and onPostExecute() runs in the main thread)
         @Override
-        protected String doInBackground(Void... params) {
+        protected ArrayList<String> doInBackground(Void... params) {
+            ArrayList<String> jsons = new ArrayList<String>();
             JSONParser jParser = new JSONParser();
-            String json = jParser.getJSONFromUrl(url);
-            return json;
+            for(String url: urls) {
+                String json = jParser.getJSONFromUrl(url);
+                jsons.add(json);
+            }
+            return jsons;
         }
 
+        //I can update the UI in this method based on some input I came up after doInbackground method(), because it's executed in main thread
         @Override
-        protected void onPostExecute(String result) {
-            super.onPostExecute(result);
+        protected void onPostExecute(ArrayList<String> results) {
+            super.onPostExecute(results);
             progressDialog.hide();
-            if (result != null) {
-                drawPath(result, color);
+            if (results != null) {
+                drawPath(results, color);
             }
         }
 
-        public void drawPath(String  result, String color) {
+        public void drawPath(ArrayList<String>  results, String color) {
 
             try {
                 //Tranform the string into a json object
-                final JSONObject json = new JSONObject(result);
-                JSONArray routeArray = json.getJSONArray("routes");
-                JSONObject routes = routeArray.getJSONObject(0);
-                JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
-                String encodedString = overviewPolylines.getString("points");
-                List<LatLng> list = decodePoly(encodedString);
-                Polyline line = mMap.addPolyline(new PolylineOptions()
-                                .addAll(list)
-                                .width(12)
-                                .color(Color.parseColor(color))//Google maps blue color
-                                .geodesic(true)
-                );
+                for(String result: results) {
+                    JSONObject json = new JSONObject(result);
+                    JSONArray routeArray = json.getJSONArray("routes");
+                    JSONObject routes = routeArray.getJSONObject(0);
+                    JSONObject overviewPolylines = routes.getJSONObject("overview_polyline");
+                    String encodedString = overviewPolylines.getString("points");
+                    List<LatLng> list = decodePoly(encodedString);
+                    Polyline line = mMap.addPolyline(new PolylineOptions()
+                                    .addAll(list)
+                                    .width(12)
+                                    .color(Color.parseColor(color))//Google maps blue color
+                                    .geodesic(true)
+                    );
+                }
            /*
            for(int z = 0; z<list.size()-1;z++){
                 LatLng src= list.get(z);
