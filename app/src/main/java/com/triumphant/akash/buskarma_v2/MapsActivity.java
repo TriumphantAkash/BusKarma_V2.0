@@ -52,6 +52,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng UTD = new LatLng(32.9843468, -96.7481245);
     private LatLng mcCallum = new LatLng(32.98797679, -96.77084923);
     private LatLng bush = new LatLng(33.003215, -96.703908);
+    private volatile ArrayList<Polyline> polyLines;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -68,6 +69,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .addOnConnectionFailedListener(this)
                 .build();
 
+        polyLines = new ArrayList<Polyline>();
         // Spinner element
         Spinner spinner = (Spinner) findViewById(R.id.spinner_bus_route);
 
@@ -284,6 +286,14 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         public void drawPath(ArrayList<String>  results, String color) {
 
+            //first remove all the polylines from the map
+            synchronized (this) {
+                for (Polyline line : polyLines) {
+                    line.remove();
+                }
+
+                polyLines.clear();
+            }
             try {
                 //Tranform the string into a json object
                 for(String result: results) {
@@ -299,6 +309,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                                     .color(Color.parseColor(color))//Google maps blue color
                                     .geodesic(true)
                     );
+                    polyLines.add(line);
                 }
            /*
            for(int z = 0; z<list.size()-1;z++){
