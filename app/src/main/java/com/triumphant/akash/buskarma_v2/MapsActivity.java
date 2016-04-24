@@ -49,11 +49,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
-    private boolean firstLocationFlag = false;
+    private LatLng UTD = new LatLng(32.9843468, -96.7481245);
+    private LatLng mcCallum = new LatLng(32.98797679, -96.77084923);
+    private LatLng bush = new LatLng(33.003215, -96.703908);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
         // Obtain the SupportMapFragment and get notified when the map is ready to be used.
@@ -79,9 +80,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 {
                     // do your stuff
                     Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
+                    String url1 = makeURL(UTD.latitude, UTD.longitude, mcCallum.latitude, mcCallum.longitude);
+                    new connectAsyncTask(url1, "#ffa500").execute();
+                    Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
+                    String url2 = makeURL(mcCallum.latitude, mcCallum.longitude,UTD.latitude, UTD.longitude);
+                    new connectAsyncTask(url2, "#ffa500").execute();
+
                 }
                 else if(selectedItem.equals("Comet Cruiser 883 East")){
                     Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
+
+                    String url1 = makeURL(UTD.latitude, UTD.longitude, bush.latitude, bush.longitude);
+                    new connectAsyncTask(url1, "#00B200").execute();
+
+                    String url2 = makeURL(bush.latitude, bush.longitude,UTD.latitude, UTD.longitude);
+                    new connectAsyncTask(url2, "#00B200").execute();
                 }
             } // to close the onItemSelected
             public void onNothingSelected(AdapterView<?> parent)
@@ -139,7 +152,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap.addMarker(new MarkerOptions().position(UTD).title("Comet Cruiser"));
         a = new MarkerOptions().position(you).title("you");
         m = mMap.addMarker(a);
-        mMap.animateCamera(CameraUpdateFactory.newLatLng(UTD));
+        mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UTD, 13.0f));
         //mMap.
     }
 
@@ -171,12 +184,12 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             m.setPosition(you);
         }
 
-        if (!firstLocationFlag) {
-            String url = makeURL(32.9843468, -96.7481245, Double.parseDouble(strings1[0]), Double.parseDouble(strings1[1]));
-            firstLocationFlag = true;
-            new connectAsyncTask(url).execute();
-
-        }
+//        if (!firstLocationFlag) {
+//            String url = makeURL(32.9843468, -96.7481245, Double.parseDouble(strings1[0]), Double.parseDouble(strings1[1]));
+//            firstLocationFlag = true;
+//            new connectAsyncTask(url).execute();
+//
+//        }
     }
 
     @Override
@@ -228,9 +241,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private class connectAsyncTask extends AsyncTask<Void, Void, String> {
         private ProgressDialog progressDialog;
         String url;
+        String color;
 
-        connectAsyncTask(String urlPass) {
+        connectAsyncTask(String urlPass, String clr) {
             url = urlPass;
+            color = clr;
         }
 
         @Override
@@ -255,11 +270,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             super.onPostExecute(result);
             progressDialog.hide();
             if (result != null) {
-                drawPath(result);
+                drawPath(result, color);
             }
         }
 
-        public void drawPath(String  result) {
+        public void drawPath(String  result, String color) {
 
             try {
                 //Tranform the string into a json object
@@ -272,7 +287,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 Polyline line = mMap.addPolyline(new PolylineOptions()
                                 .addAll(list)
                                 .width(12)
-                                .color(Color.parseColor("#05b1fb"))//Google maps blue color
+                                .color(Color.parseColor(color))//Google maps blue color
                                 .geodesic(true)
                 );
            /*
