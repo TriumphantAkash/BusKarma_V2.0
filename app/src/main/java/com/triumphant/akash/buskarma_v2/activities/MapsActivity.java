@@ -1,5 +1,7 @@
 package com.triumphant.akash.buskarma_v2.activities;
 
+import android.os.Looper;
+import android.os.Message;
 import android.app.ProgressDialog;
 import android.graphics.Color;
 import android.location.Location;
@@ -28,7 +30,16 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
 import com.triumphant.akash.buskarma_v2.R;
+import com.triumphant.akash.buskarma_v2.threads.ClientSocketReader;
 import com.triumphant.akash.buskarma_v2.utilities.JSONParser;
+
+
+import java.io.BufferedReader;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.net.Socket;
+
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -40,12 +51,15 @@ import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 //sample comment
+    public String SERVER_IP = "54.174.186.244";
+    public int SERVER_PORT = 6970;
     private GoogleMap mMap;
     private LatLng you;
     Marker m;
     MarkerOptions a;
     private final String LOG_TAG = "BusKarma";
     public Handler mHandler;
+    public BufferedReader inFromServer;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -123,6 +137,34 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
+
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (Looper.myLooper() == null) {
+                    Looper.prepare();
+                }
+                mHandler = new Handler() {
+                    public void handleMessage(Message msg) {
+                        String str = msg.getData().getString("msg");
+                        if(str == null){
+                            //Reader thread sent null to main thread means Server sent readerThread NUll
+                            //means server went down
+                            Toast.makeText(getApplicationContext(), "server went down \nrelaunch the aplication and try again", Toast.LENGTH_LONG).show();
+                        }
+                        Log.i(LOG_TAG, "*****************GOT THIS DATA FROM SERVER*****************\n"+str);
+                    }
+                };
+            }
+        });
+
+        ManagerThread managerThread = new ManagerThread();
+        managerThread.start();
+//        try {
+//            managerThread.join();
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
 
     }
 
@@ -364,6 +406,29 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         return poly;
     }
 
+    public class ManagerThread extends Thread{
+
+        public void run() {
+            Looper.prepare();
+            Socket clientSocket = null;
+            try {
+                clientSocket = new Socket(SERVER_IP, SERVER_PORT);
+               // outToServer = new DataOutputStream(clientSocket.getOutputStream());
+               // ClientSocketWriter socketWriteThread = new ClientSocketWriter(outToServer);
+              //  socketWriteThread.start();
+
+                inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
+                ClientSocketReader socketReadThread = new ClientSocketReader(inFromServer, mHandler, getApplicationContext());
+                socketReadThread.start();
+
+               // socketWriteThread.join();
+                socketReadThread.join();
+            } catch (IOException | InterruptedException e) {
+                e.printStackTrace();
+                Toast.makeText(getApplicationContext(), "server is not up", Toast.LENGTH_LONG).show();
+            }
+        }
+    }
 
 
 }

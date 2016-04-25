@@ -33,11 +33,10 @@ public class ClientSocketReader extends Thread{
         try {
             System.out.println("client reader thread is up and running");
             while(true){
-                Thread.sleep(1000);
+                Thread.sleep(10);
                 msg = Message.obtain();
                 message = inFromServer.readLine();	//a new message is arrived
                 if(message == null){
-                    Toast.makeText(mainActivityContext, "server went down", Toast.LENGTH_LONG).show();
                     break;
                 }
                 bundle = new Bundle();
