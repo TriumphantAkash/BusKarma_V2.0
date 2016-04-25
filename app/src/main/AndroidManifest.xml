@@ -29,8 +29,8 @@
             android:value="@string/google_maps_key" />
 
         <activity
-            android:name=".MapsActivity"
-            android:label="@string/title_activity_maps" >
+            android:name=".activities.MapsActivity"
+            android:label="Locate my Bus " >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

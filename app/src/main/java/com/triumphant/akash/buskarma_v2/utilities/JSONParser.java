@@ -1,4 +1,4 @@
-package com.triumphant.akash.buskarma_v2;
+package com.triumphant.akash.buskarma_v2.utilities;
 
 /**
  * Created by Akash on 4/23/2016.

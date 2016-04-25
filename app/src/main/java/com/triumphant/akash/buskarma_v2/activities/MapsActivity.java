@@ -1,13 +1,10 @@
-package com.triumphant.akash.buskarma_v2;
+package com.triumphant.akash.buskarma_v2.activities;
 
 import android.app.ProgressDialog;
-import android.content.Intent;
 import android.graphics.Color;
 import android.location.Location;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MenuItem;
@@ -16,7 +13,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 import android.widget.Toast;
-
+import android.os.Handler;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.location.LocationRequest;
@@ -30,6 +27,8 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.maps.model.Polyline;
 import com.google.android.gms.maps.model.PolylineOptions;
+import com.triumphant.akash.buskarma_v2.R;
+import com.triumphant.akash.buskarma_v2.utilities.JSONParser;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -46,6 +45,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     Marker m;
     MarkerOptions a;
     private final String LOG_TAG = "BusKarma";
+    public Handler mHandler;
 
     private GoogleApiClient mGoogleApiClient;
     private LocationRequest mLocationRequest;
@@ -53,6 +53,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     private LatLng mcCallum = new LatLng(32.98797679, -96.77084923);
     private LatLng bush = new LatLng(33.003215, -96.703908);
     private volatile ArrayList<Polyline> polyLines;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
