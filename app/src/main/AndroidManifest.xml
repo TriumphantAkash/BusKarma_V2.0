@@ -11,8 +11,8 @@
 
     <application
         android:allowBackup="true"
-        android:icon="@mipmap/ic_launcher"
-        android:label="@string/app_name"
+        android:icon="@drawable/bus_icon"
+        android:label="Locate My Bus"
         android:supportsRtl="true"
         android:theme="@style/AppTheme" >
 
@@ -39,7 +39,7 @@
         </activity>
         <activity
             android:name=".activities.MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="Locate My Bus" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
