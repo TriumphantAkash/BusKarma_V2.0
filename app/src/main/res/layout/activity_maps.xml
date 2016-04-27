@@ -4,12 +4,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:weightSum="100">
-    <Spinner
-        android:layout_width="match_parent"
-        android:layout_height="0dp"
-        android:layout_weight="10"
-        android:id="@+id/spinner_bus_route"
-        android:prompt="@string/spinner_title"/>
 
     <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
@@ -24,4 +18,14 @@
             android:layout_height="match_parent" android:id="@+id/map" tools:context=".MapsActivity"
             android:name="com.google.android.gms.maps.SupportMapFragment" />
     </LinearLayout>
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="10"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Large Text"
+        android:gravity="center"
+        android:id="@+id/text_eta" />
+
 </LinearLayout>

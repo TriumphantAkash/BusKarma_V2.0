@@ -10,11 +10,13 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.os.Handler;
 import com.google.android.gms.common.ConnectionResult;
@@ -55,6 +57,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //sample comment
 //    public String SERVER_IP = "54.174.186.244";
 //    public int SERVER_PORT = 6970;
+    public double distance;
+    public TextView textDistance;
     public Marker busMarker;
     public String SERVER_IP = "192.168.0.20";
     public int SERVER_PORT = 7070;
@@ -90,49 +94,41 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                 .build();
 
         polyLines = new ArrayList<Polyline>();
+
+        textDistance = (TextView)findViewById(R.id.text_eta);
+        Bundle homedata=getIntent().getExtras();
+        String action=homedata.getString("selection");
+
+        if (action.equals("WEST")) {
+            // do your stuff
+            Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
+            String url1 = makeURL(UTD.latitude, UTD.longitude, mcCallum.latitude, mcCallum.longitude);
+            String url2 = makeURL(mcCallum.latitude, mcCallum.longitude, UTD.latitude, UTD.longitude);
+            ArrayList<String> arrayList = new ArrayList<String>();
+            arrayList.add(url1);
+            arrayList.add(url2);
+            new connectAsyncTask(arrayList, "#ffa500").execute();
+
+        } else if (action.equals("EAST")) {
+            Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
+
+            String url1 = makeURL(UTD.latitude, UTD.longitude, bush.latitude, bush.longitude);
+            String url2 = makeURL(bush.latitude, bush.longitude, UTD.latitude, UTD.longitude);
+            ArrayList<String> arrayList = new ArrayList<String>();
+            arrayList.add(url1);
+            arrayList.add(url2);
+            new connectAsyncTask(arrayList, "#00B200").execute();
+        } else {
+            Toast.makeText(getApplicationContext(), "No route selected..", Toast.LENGTH_SHORT).show();
+        }
+         /*
         // Spinner element
         Spinner spinner = (Spinner) findViewById(R.id.spinner_bus_route);
-
-        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener()
-        {
-            public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-            {
-                String selectedItem = parent.getItemAtPosition(position).toString();
-                if(selectedItem.equals("Comet Cruiser 883 West"))
-                {
-                    // do your stuff
-                    Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
-                    String url1 = makeURL(UTD.latitude, UTD.longitude, mcCallum.latitude, mcCallum.longitude);
-                    String url2 = makeURL(mcCallum.latitude, mcCallum.longitude,UTD.latitude, UTD.longitude);
-                    ArrayList<String> arrayList = new ArrayList<String>();
-                    arrayList.add(url1);
-                    arrayList.add(url2);
-                    new connectAsyncTask(arrayList, "#ffa500").execute();
-
-                }
-                else if(selectedItem.equals("Comet Cruiser 883 East")){
-                    Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
-
-                    String url1 = makeURL(UTD.latitude, UTD.longitude, bush.latitude, bush.longitude);
-                    String url2 = makeURL(bush.latitude, bush.longitude,UTD.latitude, UTD.longitude);
-                    ArrayList<String> arrayList = new ArrayList<String>();
-                    arrayList.add(url1);
-                    arrayList.add(url2);
-                    new connectAsyncTask(arrayList, "#00B200").execute();
-                }
-            } // to close the onItemSelected
-            public void onNothingSelected(AdapterView<?> parent)
-            {
-
-            }
-        });
-        // Spinner click listener
-      //  spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
-
         // Spinner Drop down elements
         List<String> categories = new ArrayList<String>();
         categories.add("Comet Cruiser 883 West");
         categories.add("Comet Cruiser 883 East");
+
 
         // Creating adapter for spinner
         ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, categories);
@@ -142,6 +138,40 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 
         // attaching data adapter to spinner
         spinner.setAdapter(dataAdapter);
+
+        spinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+                String selectedItem = parent.getItemAtPosition(position).toString();
+                if (selectedItem.equals("Comet Cruiser 883 West")) {
+                    // do your stuff
+                    Toast.makeText(getApplicationContext(), "883 West selected", Toast.LENGTH_SHORT).show();
+                    String url1 = makeURL(UTD.latitude, UTD.longitude, mcCallum.latitude, mcCallum.longitude);
+                    String url2 = makeURL(mcCallum.latitude, mcCallum.longitude, UTD.latitude, UTD.longitude);
+                    ArrayList<String> arrayList = new ArrayList<String>();
+                    arrayList.add(url1);
+                    arrayList.add(url2);
+                    new connectAsyncTask(arrayList, "#ffa500").execute();
+
+                } else if (selectedItem.equals("Comet Cruiser 883 East")) {
+                    Toast.makeText(getApplicationContext(), "883 East selected", Toast.LENGTH_SHORT).show();
+
+                    String url1 = makeURL(UTD.latitude, UTD.longitude, bush.latitude, bush.longitude);
+                    String url2 = makeURL(bush.latitude, bush.longitude, UTD.latitude, UTD.longitude);
+                    ArrayList<String> arrayList = new ArrayList<String>();
+                    arrayList.add(url1);
+                    arrayList.add(url2);
+                    new connectAsyncTask(arrayList, "#00B200").execute();
+                }
+            } // to close the onItemSelected
+
+            public void onNothingSelected(AdapterView<?> parent) {
+
+            }
+        });
+        // Spinner click listener
+      //  spinner.setOnItemSelectedListener((AdapterView.OnItemSelectedListener) this);
+
+*/
 
         runOnUiThread(new Runnable() {
             @Override
@@ -159,7 +189,21 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                         }
                         String[] ll = str.split(",");
                         busMarker.setPosition(new LatLng(Double.parseDouble(ll[0]), Double.parseDouble(ll[1])));
-                        Log.i(LOG_TAG, "*****************GOT THIS DATA FROM SERVER*****************"+str);
+                        Location loc1 = new Location("");
+                        loc1.setLatitude(you.latitude);
+                        loc1.setLongitude(you.longitude);
+
+                        Location loc2 = new Location("");
+                        loc2.setLatitude(Double.parseDouble(ll[0]));
+                        loc2.setLongitude(Double.parseDouble(ll[1]));
+
+                        double distanceInMiles = (loc1.distanceTo(loc2))*(0.000621371);
+                        double time = distanceInMiles/40;
+                        double timeInMinutes = time*60;
+
+                        textDistance.setText("Bus will come in "+timeInMinutes+" minutes");
+
+                        Log.i(LOG_TAG, "*****************GOT THIS DATA FROM SERVER*****************" + str);
 
                     }
                 };
@@ -254,21 +298,6 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         Log.i(LOG_TAG, "GoogleApiClient connection has failed");
     }
 
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-//        int id = item.getItemId();
-//
-//        //noinspection SimplifiableIfStatement
-//        if (id == R.id.action_settings) {
-//            // return true;
-//            toSettings();
-//        }
-//
-        return super.onOptionsItemSelected(item);
-    }
 
 //    public void toSettings() {
 //        Intent intent = new Intent(getApplicationContext(), Settings.class);
@@ -445,5 +474,33 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Intent intent = new Intent(this, SettingsActivity.class);
             startActivity(intent);
         }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.menu_maps, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+
+        //noinspection SimplifiableIfStatement
+        if (id == R.id.action_settings) {
+            toSettingsActivity();
+            return true;
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+
+    public void toSettingsActivity(){
+        Intent intent = new Intent(this.getApplicationContext(), SettingsActivity.class);
+        startActivity(intent);
+    }
 
     }
