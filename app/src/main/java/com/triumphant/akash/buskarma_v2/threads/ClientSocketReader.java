@@ -41,7 +41,7 @@ public class ClientSocketReader extends Thread{
                     break;
                 }
                 bundle = new Bundle();
-                bundle.putString("msg" ,message+"\n");
+                bundle.putString("msg" ,message);
                 msg.setData(bundle);
                 referenceHandler.sendMessage(msg);
                 Log.i("****TAG****", "SERVER: " + message + "\n");

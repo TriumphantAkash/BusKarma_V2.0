@@ -55,7 +55,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
 //sample comment
 //    public String SERVER_IP = "54.174.186.244";
 //    public int SERVER_PORT = 6970;
-
+    public Marker busMarker;
     public String SERVER_IP = "192.168.0.20";
     public int SERVER_PORT = 7070;
     private GoogleMap mMap;
@@ -157,7 +157,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
                             //means server went down
                             Toast.makeText(getApplicationContext(), "server went down \nrelaunch the aplication and try again", Toast.LENGTH_LONG).show();
                         }
-                        Log.i(LOG_TAG, "*****************GOT THIS DATA FROM SERVER*****************\n"+str);
+                        String[] ll = str.split(",");
+                        busMarker.setPosition(new LatLng(Double.parseDouble(ll[0]), Double.parseDouble(ll[1])));
+                        Log.i(LOG_TAG, "*****************GOT THIS DATA FROM SERVER*****************"+str);
+
                     }
                 };
             }
@@ -202,7 +205,7 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         LatLng UTD = new LatLng(32.9843468, -96.7481245);
         you = new LatLng(32.9843468, -96.7481248);
         MarkerOptions bus = new MarkerOptions().position(UTD).title("Comet Cruiser").icon(BitmapDescriptorFactory.fromResource(R.drawable.bus));
-        mMap.addMarker(bus);
+        busMarker = mMap.addMarker(bus);
 
         a = new MarkerOptions().position(you).title("you").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_user));
         m = mMap.addMarker(a);
