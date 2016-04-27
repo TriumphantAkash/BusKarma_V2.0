@@ -1,5 +1,6 @@
 package com.triumphant.akash.buskarma_v2.activities;
 
+import android.content.Intent;
 import android.os.Looper;
 import android.os.Message;
 import android.app.ProgressDialog;
@@ -24,6 +25,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -51,8 +53,11 @@ import java.util.List;
 
 public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, com.google.android.gms.location.LocationListener {
 //sample comment
-    public String SERVER_IP = "54.174.186.244";
-    public int SERVER_PORT = 6970;
+//    public String SERVER_IP = "54.174.186.244";
+//    public int SERVER_PORT = 6970;
+
+    public String SERVER_IP = "192.168.0.20";
+    public int SERVER_PORT = 7070;
     private GoogleMap mMap;
     private LatLng you;
     Marker m;
@@ -196,8 +201,10 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         mMap = googleMap;
         LatLng UTD = new LatLng(32.9843468, -96.7481245);
         you = new LatLng(32.9843468, -96.7481248);
-        mMap.addMarker(new MarkerOptions().position(UTD).title("Comet Cruiser"));
-        a = new MarkerOptions().position(you).title("you");
+        MarkerOptions bus = new MarkerOptions().position(UTD).title("Comet Cruiser").icon(BitmapDescriptorFactory.fromResource(R.drawable.bus));
+        mMap.addMarker(bus);
+
+        a = new MarkerOptions().position(you).title("you").icon(BitmapDescriptorFactory.fromResource(R.drawable.ic_action_user));
         m = mMap.addMarker(a);
         mMap.animateCamera(CameraUpdateFactory.newLatLngZoom(UTD, 13.0f));
         //mMap.
@@ -413,7 +420,8 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
             Socket clientSocket = null;
             try {
                 clientSocket = new Socket(SERVER_IP, SERVER_PORT);
-               // outToServer = new DataOutputStream(clientSocket.getOutputStream());
+               DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
+                outToServer.writeBytes("client\n");
                // ClientSocketWriter socketWriteThread = new ClientSocketWriter(outToServer);
               //  socketWriteThread.start();
 
@@ -430,5 +438,9 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         }
     }
 
+        public void toDetailsActivity() {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        }
 
-}
+    }

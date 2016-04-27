@@ -31,11 +31,12 @@ public class ClientSocketReader extends Thread{
         Looper.prepare();
 
         try {
-            System.out.println("client reader thread is up and running");
+            Log.i("****TAG****", "client reader thread is up and running");
             while(true){
-                Thread.sleep(10);
+                Thread.sleep(100);
                 msg = Message.obtain();
                 message = inFromServer.readLine();	//a new message is arrived
+                Log.i("****TAG****", "COORDINATES: "+message);
                 if(message == null){
                     break;
                 }
